@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"><!-- Important as fuck! -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!-- Important for CSS -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Guitar Inventory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+    <form>
+
+        <label for="amount">Amount:</label>
+        <input class="w3-input" type="text" name="amount" id="amount"value="1000">
+
+        <label for="infected">Infected:</label>
+        <input class="w3-input" type="text" name="infected" id="infected" value="2">
+
+        <label for="maxSimulations">maxSimulations:</label>
+        <input class="w3-input" type="text" name="maxSimulations" id="maxSimulations" value="1">
+
+        <label for="maxDaysPerSimulation">maxDaysPerSimulation:</label>
+        <input class="w3-input" type="text" name="maxDaysPerSimulation" id="maxDaysPerSimulation" value="100">
+
+        <label for="stepsPerDay">stepsPerDay:</label>
+        <input class="w3-input" type="text" name="stepsPerDay" id="stepsPerDay" value="15">
+
+        <label for="infectionRate">infectionRate:</label>
+        <input class="w3-input" type="text" name="infectionRate" id="infectionRate" value="0.69">
+
+        <label for="criticalDistance">criticalDistance:</label>
+        <input class="w3-input" type="text" name="criticalDistance" id="criticalDistance" value="5">
+
+        <label for="infectionDuration">infectionDuration:</label>
+        <input class="w3-input" type="text" name="infectionDuration" id="infectionDuration" value="5">
+
+        
+    </form>
+    <button class="w3-button" id="send" onclick="getData();">Hol mal Daten ab!</button>
+    <div id="info_page" style="display: none;">
+        <h1>Ladeinfo:</h1>
+        Je nach dem, welche Daten du eingegeben hast, kann das ne weile dauern!<br>
+        (Drück nicht 80 mal auf senden, sonst fang ich immer wieder neu an.)<br>
+        <br>
+    </div>
+    <div id="about_page" style="display:none;">
+        <h1>Mein Plot ist dein Plot, bitte sehr:</h1>
+        <canvas id="plot" width="400" height="400" style="width:100%"></canvas>
+    </div>
+    <script>
+            amount = 1000;     // Anzahl Personen.
+            infected = 2;   // Anzahl anfangs infizierter Personen.
+            maxSimulations = 1; // Anzahl an Simulationen die nacheinander durchlaufen werden.
+            maxDaysPerSimulation = 100;    // Anzahl an Tagen die Simuliert wird.
+            stepsPerDay = 15;             // Anzahl an Schritte die eine Person an einem Tag macht.
+            infectionRate = 0.67 // Wahrscheinlichkeit zur Ansteckung?
+            criticalDistance = 5;
+            infectionDuration = 5;
+
+
+            function getData() {
+                div = document.getElementById('about_page');
+                div.style = "display: none;";
+                div = document.getElementById('info_page');
+                div.style = "display: block;";
+                form_amount = document.getElementById("amount");
+                form_infected = document.getElementById("infected");
+                form_maxSimulations = document.getElementById("maxSimulations");
+                form_maxDaysPerSimulation = document.getElementById("maxDaysPerSimulation");
+                form_stepsPerDay = document.getElementById("stepsPerDay");
+                form_infectionRate = document.getElementById("infectionRate");
+                form_criticalDistance = document.getElementById("criticalDistance");
+                form_infectionDuration = document.getElementById("infectionDuration");
+                amount = form_amount.value,
+                infected = form_infected.value,
+                maxSimulations = form_maxSimulations.value,
+                maxDaysPerSimulation = form_maxDaysPerSimulation.value,
+                stepsPerDay = form_stepsPerDay.value,
+                infectionRate = form_infectionRate.value,
+                criticalDistance = form_criticalDistance.value,
+                infectionDuration = form_infectionDuration.value
+                /*
+                FE ist im Frontend eingebunden und soll
+                unter beachtung der im Formular eingegebenen Daten
+                die Daten vom Server holen
+                und auf den Canvas plotten.
+                */
+                const xhr = new XMLHttpRequest();
+                const url = "http://localhost:8087/sir_data";
+                xhr.open("post", url, true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        const json = JSON.parse(xhr.responseText);
+                        // tslint:disable-next-line:no-console
+                        // console.log(json.email + ", " + json.password);
+                        plot(json);
+                    }
+                };
+                const data = JSON.stringify(
+                    {
+                        "amount": form_amount.value,
+                        "infected": form_infected.value,
+                        "maxSimulations": form_maxSimulations.value,
+                        "maxDaysPerSimulation": form_maxDaysPerSimulation.value,
+                        "stepsPerDay": form_stepsPerDay.value,
+                        "infectionRate": form_infectionRate.value,
+                        "criticalDistance": form_criticalDistance.value,
+                        "infectionDuration": form_infectionDuration.value
+                    }
+                );
+                xhr.send(data);
+            }
+            function plot(json) {
+                const sirdata = json.sirdata;
+                const plot = document.getElementById('plot');
+                const ctx = plot.getContext("2d");
+                let last = null;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0,0,400,400);
+                sirdata.forEach((sir,index)=>{
+                    // Suscepible
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(index*4, (100-(sir.suscepible/this.amount*100))*4, 2, 2);
+                    ctx.strokeStyle = '#FF0000';
+                    // ctx.arc(index*4, (100-(sir.suscepible/this.amount*100))*4, 0.5, 0, 2 * Math.PI);
+        
+                    ctx.stroke();
+                    // Infected
+                    ctx.fillStyle = '#FF0000';
+                    ctx.fillRect(index*4, (100-(sir.infected/this.amount*100))*4, 2, 2);
+                    ctx.strokeStyle = '#0000FF';
+                    // ctx.arc(index*4, (100-(sir.infected/this.amount*100))*4, 0.5, 0, 2 * Math.PI);
+                    ctx.stroke();
+                    // Removed
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(index*4, (100-(sir.removed/this.amount*100))*4, 2, 2);
+                    ctx.strokeStyle = '#000000';
+                    // ctx.arc(index*4, (100-(sir.removed/this.amount*100))*4, 0.5, 0, 2 * Math.PI);
+                    ctx.stroke();
+
+                    last = sir;
+                });
+                div = document.getElementById('info_page');
+                div.style = "display: none;";
+                div = document.getElementById('about_page');
+                div.style = "display: block;";
+            }
+        
+
+    </script>
+</body>
+</html>

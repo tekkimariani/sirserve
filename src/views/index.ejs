@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Guitar Inventory</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+</head>
+<body>
+<!--
+    static amount: number = 1000;     // Anzahl Personen.
+    static infected: number = 2;   // Anzahl anfangs infizierter Personen.
+    static maxSimulations = 1; // Anzahl an Simulationen die nacheinander durchlaufen werden.
+    static maxDaysPerSimulation: number = 100;    // Anzahl an Tagen die Simuliert wird.
+    static stepsPerDay: number = 15;             // Anzahl an Schritte die eine Person an einem Tag macht.
+
+    static infectionRate: number = 0.67 // Wahrscheinlichkeit zur Ansteckung?
+    static criticalDistance: number = 5;
+    static infectionDuration: number = 5;
+-->
+    <form method="post" action="/sir">
+
+        <label for="amount">Amount:</label>
+        <input class="w3-input" type="text" name="amount" id="amount"value="1000">
+
+        <label for="infected">Infected:</label>
+        <input class="w3-input" type="text" name="infected" id="infected" value="2">
+
+        <label for="maxSimulations">maxSimulations:</label>
+        <input class="w3-input" type="text" name="maxSimulations" id="maxSimulations" value="1">
+
+        <label for="maxDaysPerSimulation">maxDaysPerSimulation:</label>
+        <input class="w3-input" type="text" name="maxDaysPerSimulation" id="maxDaysPerSimulation" value="100">
+
+        <label for="stepsPerDay">stepsPerDay:</label>
+        <input class="w3-input" type="text" name="stepsPerDay" id="stepsPerDay" value="15">
+
+        <label for="infectionRate">infectionRate:</label>
+        <input class="w3-input" type="text" name="infectionRate" id="infectionRate" value="0.69">
+
+        <label for="criticalDistance">criticalDistance:</label>
+        <input class="w3-input" type="text" name="criticalDistance" id="criticalDistance" value="5">
+
+        <label for="infectionDuration">infectionDuration:</label>
+        <input class="w3-input" type="text" name="infectionDuration" id="infectionDuration" value="5">
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
